@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from tortoise.expressions import Q
 
 from app.api import api_router
-from app.controllers.api import api_controller
 from app.controllers.user import UserCreate, user_controller
 from app.core.exceptions import (
     DoesNotExist,
@@ -179,12 +178,6 @@ async def init_menus():
         )
 
 
-async def init_apis():
-    apis = await api_controller.model.exists()
-    if not apis:
-        await api_controller.refresh_api()
-
-
 async def init_db():
     command = Command(tortoise_config=settings.TORTOISE_ORM)
     try:
@@ -232,5 +225,4 @@ async def init_data():
     await init_db()
     await init_superuser()
     await init_menus()
-    await init_apis()
     await init_roles()

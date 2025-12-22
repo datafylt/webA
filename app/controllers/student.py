@@ -39,5 +39,13 @@ class StudentController(CRUDBase[Student, StudentCreate, StudentUpdate]):
         """Bulk delete multiple students"""
         return await self.model.filter(id__in=ids).delete()
 
+    async def get_all_students(self):
+        """Get all students"""
+        return await self.model.all().order_by("last_name", "first_name")
+
+    async def get_active_students(self):
+        """Get active students only"""
+        return await self.model.filter(status="active").order_by("last_name", "first_name")
+
 
 student_controller = StudentController()

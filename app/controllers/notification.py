@@ -35,18 +35,33 @@ class NotificationController(CRUDBase[Notification, NotificationCreate, Notifica
     def __init__(self):
         super().__init__(model=Notification)
 
-    async def create_notification(self, obj_in: NotificationCreate) -> Notification:
-        """Create a new notification"""
+    async def create_notification(
+        self,
+        recipient_email: str,
+        subject: str,
+        body: str,
+        recipient_name: Optional[str] = None,
+        student_id: Optional[int] = None,
+        notification_type: str = "general",
+        template_id: Optional[int] = None,
+        scheduled_at: Optional[datetime] = None,
+        status: str = "pending",
+        sent_at: Optional[datetime] = None,
+        error_message: Optional[str] = None,
+    ) -> Notification:
+        """Create a new notification with flexible parameters"""
         notification = await self.model.create(
-            recipient_email=obj_in.recipient_email,
-            recipient_name=obj_in.recipient_name,
-            student_id=obj_in.student_id,
-            subject=obj_in.subject,
-            body=obj_in.body,
-            notification_type=obj_in.notification_type,
-            template_id=obj_in.template_id,
-            scheduled_at=obj_in.scheduled_at,
-            status="pending"
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            student_id=student_id,
+            subject=subject,
+            body=body,
+            notification_type=notification_type,
+            template_id=template_id,
+            scheduled_at=scheduled_at,
+            status=status,
+            sent_at=sent_at,
+            error_message=error_message,
         )
         return notification
 
@@ -103,16 +118,27 @@ class NotificationController(CRUDBase[Notification, NotificationCreate, Notifica
 
     async def get_stats(self):
         """Get notification statistics"""
+        from datetime import timedelta
+        
         total = await self.model.all().count()
         sent = await self.model.filter(status="sent").count()
         pending = await self.model.filter(status="pending").count()
         failed = await self.model.filter(status="failed").count()
+        
+        # Dernières 24h
+        yesterday = datetime.now() - timedelta(days=1)
+        sent_24h = await self.model.filter(
+            status="sent",
+            sent_at__gte=yesterday
+        ).count()
         
         return {
             "total": total,
             "sent": sent,
             "pending": pending,
             "failed": failed,
+            "sent_24h": sent_24h,
+            "success_rate": round(sent / total * 100, 1) if total > 0 else 0,
         }
 
 
