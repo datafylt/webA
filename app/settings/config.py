@@ -1,8 +1,10 @@
 import os
 import typing
-
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
+
+load_dotenv()
 
 class Settings(BaseSettings):
     VERSION: str = "1.0.0"
@@ -15,7 +17,7 @@ class Settings(BaseSettings):
     CORS_ALLOW_METHODS: typing.List = ["*"]
     CORS_ALLOW_HEADERS: typing.List = ["*"]
 
-    DEBUG: bool = True
+    DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
 
     PROJECT_ROOT: str = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
     BASE_DIR: str = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))

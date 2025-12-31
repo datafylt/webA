@@ -1,4 +1,5 @@
 import sys
+import logging
 
 from loguru import logger as loguru_logger
 
@@ -12,6 +13,10 @@ class Loggin:
             self.level = "DEBUG"
         else:
             self.level = "INFO"
+            # Désactiver les logs debug de tortoise, aiosqlite, etc.
+            logging.getLogger("tortoise").setLevel(logging.WARNING)
+            logging.getLogger("aiosqlite").setLevel(logging.WARNING)
+            logging.getLogger("tortoise.db_client").setLevel(logging.WARNING)
 
     def setup_logger(self):
         loguru_logger.remove()

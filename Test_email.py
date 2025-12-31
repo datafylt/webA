@@ -4,12 +4,11 @@ from email.message import EmailMessage
 from email.utils import formatdate, make_msgid
 
 
-def main():
+def main(password):
     SMTP_HOST = "smtp.ionos.com"
     SMTP_PORT = 465  # SMTPS (implicit SSL)
 
     USERNAME = "administration@formationelectro.com"
-    PASSWORD = "951753!!!Yoric"
     TO_EMAIL = "ric.seedoo@gmail.com"
 
     FROM_NAME = "Formation Électro"
@@ -34,11 +33,13 @@ def main():
     print("Envoi en cours...")
     with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context, timeout=20) as server:
         server.set_debuglevel(1)  # like Java mail.debug=true (optional)
-        server.login(USERNAME, PASSWORD)
+        server.login(USERNAME, password)
         server.send_message(msg)
 
     print("✅ Email envoyé avec succès!")
 
 
 if __name__ == "__main__":
-    main()
+    PASSWORD = "951753!!!Yoric"
+
+    main(PASSWORD)
