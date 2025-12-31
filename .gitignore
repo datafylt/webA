@@ -19,3 +19,8 @@ migrations/
 
 .DS_Store
 ._.DS_Store
+
+# Ignore SQLite database files
+db_website_a.sqlite3
+db_website_a.sqlite3-shm
+db_website_a.sqlite3-wal
