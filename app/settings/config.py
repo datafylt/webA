@@ -29,14 +29,14 @@ class Settings(BaseSettings):
     # ═══════════════════════════════════════════════════════════════════════
     # SMTP EMAIL - IONOS Configuration
     # ═══════════════════════════════════════════════════════════════════════
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
     SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.ionos.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USER: str = os.getenv("SMTP_USER", "administration@formationelectro.com")
-    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
     SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "administration@formationelectro.com")
     SMTP_FROM_NAME: str = os.getenv("SMTP_FROM_NAME", "Formation Électro")
-    SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
-    SMTP_USE_SSL: bool = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
+    SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "false").lower() == "true"
+    SMTP_USE_SSL: bool = os.getenv("SMTP_USE_SSL", "true").lower() == "true"
     EMAIL_TEST_MODE: bool = os.getenv("EMAIL_TEST_MODE", "false").lower() == "true"
     
     TORTOISE_ORM: dict = {
@@ -68,7 +68,7 @@ settings = Settings()
 SMTP_PROVIDERS = {
     "ionos": {
         "host": "smtp.ionos.com",
-        "port": 587,
+        "port": 465,
         "use_tls": True,
         "use_ssl": False,
     },

@@ -1,7 +1,11 @@
+import os
 import smtplib
 import ssl
 from email.message import EmailMessage
 from email.utils import formatdate, make_msgid
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 def main(password):
@@ -40,6 +44,5 @@ def main(password):
 
 
 if __name__ == "__main__":
-    PASSWORD = "951753!!!Yoric"
-
-    main(PASSWORD)
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    main(SMTP_PASSWORD)
