@@ -63,12 +63,21 @@ class Settings(BaseSettings):
             if db_url and db_url.startswith("postgres://"):
                 db_url = db_url.replace("postgres://", "postgresql://", 1)
 
+            # Parse URL or use direct connection string
+            import re
+            from urllib.parse import urlparse
+            parsed = urlparse(db_url)
+
             return {
                 "connections": {
                     "default": {
                         "engine": "tortoise.backends.asyncpg",
                         "credentials": {
-                            "url": db_url
+                            "host": parsed.hostname or "localhost",
+                            "port": parsed.port or 5432,
+                            "user": parsed.username or "postgres",
+                            "password": parsed.password or "",
+                            "database": parsed.path.lstrip("/") if parsed.path else "formation_electro",
                         },
                     },
                 },
