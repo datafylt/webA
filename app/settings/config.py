@@ -25,6 +25,12 @@ class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY", "3488a63e1765035d386f05409663f55c83bfae3b3c61a932744b20ad14244dcf")
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # DATABASE Configuration
+    # ═══════════════════════════════════════════════════════════════════════
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
+    DB_USE_POSTGRES: bool = os.getenv("DB_USE_POSTGRES", "false").lower() == "true"
     
     # ═══════════════════════════════════════════════════════════════════════
     # SMTP EMAIL - IONOS Configuration
@@ -39,22 +45,61 @@ class Settings(BaseSettings):
     SMTP_USE_SSL: bool = os.getenv("SMTP_USE_SSL", "true").lower() == "true"
     EMAIL_TEST_MODE: bool = os.getenv("EMAIL_TEST_MODE", "false").lower() == "true"
     
-    TORTOISE_ORM: dict = {
-        "connections": {
-            "sqlite": {
-                "engine": "tortoise.backends.sqlite",
-                "credentials": {"file_path": f"{BASE_DIR}/db_website_a.sqlite3"},
-            },
-        },
-        "apps": {
-            "models": {
-                "models": ["app.models", "aerich.models"],
-                "default_connection": "sqlite",
-            },
-        },
-        "use_tz": False,
-        "timezone": "America/Montreal",
-    }
+    @property
+    def TORTOISE_ORM(self) -> dict:
+        """
+        Dynamic Tortoise ORM configuration that supports both SQLite and PostgreSQL.
+        Uses PostgreSQL when DATABASE_URL is provided (Heroku) or DB_USE_POSTGRES=true.
+        Falls back to SQLite for local development.
+        """
+        # Check if we should use PostgreSQL
+        use_postgres = self.DATABASE_URL or self.DB_USE_POSTGRES
+
+        if use_postgres:
+            # PostgreSQL configuration
+            db_url = self.DATABASE_URL
+
+            # Heroku provides DATABASE_URL starting with postgres://, but asyncpg needs postgresql://
+            if db_url and db_url.startswith("postgres://"):
+                db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+            return {
+                "connections": {
+                    "default": {
+                        "engine": "tortoise.backends.asyncpg",
+                        "credentials": {
+                            "url": db_url
+                        },
+                    },
+                },
+                "apps": {
+                    "models": {
+                        "models": ["app.models", "aerich.models"],
+                        "default_connection": "default",
+                    },
+                },
+                "use_tz": False,
+                "timezone": "America/Montreal",
+            }
+        else:
+            # SQLite configuration for local development
+            return {
+                "connections": {
+                    "default": {
+                        "engine": "tortoise.backends.sqlite",
+                        "credentials": {"file_path": f"{self.BASE_DIR}/db_website_a.sqlite3"},
+                    },
+                },
+                "apps": {
+                    "models": {
+                        "models": ["app.models", "aerich.models"],
+                        "default_connection": "default",
+                    },
+                },
+                "use_tz": False,
+                "timezone": "America/Montreal",
+            }
+
     DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
 
