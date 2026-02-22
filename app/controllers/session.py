@@ -3,9 +3,8 @@ Session Controller - Business logic for Session CRUD
 """
 
 from datetime import date
-from typing import Optional, List
+from typing import Optional
 
-from tortoise.expressions import Q
 
 from app.core.crud import CRUDBase
 from app.models.session import Session, SessionEnrollment

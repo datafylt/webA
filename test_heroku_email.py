@@ -118,14 +118,14 @@ Date: February 8, 2026
             server.login(SMTP_USER, SMTP_PASSWORD)
             print("✅ Authenticated successfully")
 
-            print(f"📤 Sending email to ric.seedoo@gmail.com...")
+            print("📤 Sending email to ric.seedoo@gmail.com...")
             server.send_message(msg)
             print("✅ Email sent successfully!")
 
         print("\n" + "="*60)
         print("🎉 TEST COMPLETE - Email sent successfully!")
         print("="*60)
-        print(f"\n📬 Check your inbox at: ric.seedoo@gmail.com")
+        print("\n📬 Check your inbox at: ric.seedoo@gmail.com")
         print("   (Also check spam folder if not in inbox)")
         print("\n✅ Your SMTP configuration is working correctly!")
         print("✅ You can now send emails from your application!")

@@ -3,8 +3,6 @@ Invoice API Endpoints - CRUD Operations
 """
 
 import logging
-from datetime import date
-from decimal import Decimal
 
 from fastapi import APIRouter, Query
 from tortoise.expressions import Q
@@ -182,7 +180,7 @@ async def get_stats():
     """
     Récupérer les statistiques de facturation.
     """
-    from tortoise.functions import Sum, Count
+    from tortoise.functions import Sum
     
     # Total invoices
     total_count = await invoice_controller.model.all().count()

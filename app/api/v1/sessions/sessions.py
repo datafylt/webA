@@ -3,14 +3,12 @@ Session API Endpoints - CRUD Operations
 """
 
 import logging
-from datetime import date, time
-from decimal import Decimal
+from datetime import date
 
 from fastapi import APIRouter, Query
 from tortoise.expressions import Q
 
 from app.controllers.session import session_controller, enrollment_controller
-from app.models.session import Session, SessionEnrollment
 from app.schemas.base import Fail, Success, SuccessExtra
 from app.schemas.sessions import SessionCreate, SessionUpdate, EnrollmentCreate, EnrollmentUpdate
 

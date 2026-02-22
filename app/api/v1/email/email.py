@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Query, Body
+from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field, EmailStr
 
 from app.core.config import settings, SMTP_PROVIDERS

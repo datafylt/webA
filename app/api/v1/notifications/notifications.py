@@ -3,7 +3,6 @@ Notification API Endpoints - CRUD Operations
 """
 
 import logging
-from datetime import datetime
 
 from fastapi import APIRouter, Query
 from tortoise.expressions import Q

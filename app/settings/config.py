@@ -64,7 +64,6 @@ class Settings(BaseSettings):
                 db_url = db_url.replace("postgres://", "postgresql://", 1)
 
             # Parse URL or use direct connection string
-            import re
             from urllib.parse import urlparse
             parsed = urlparse(db_url)
 

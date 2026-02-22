@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter
-from tortoise.functions import Sum, Count
+from tortoise.functions import Sum
 
 from app.models.student import Student
 from app.models.program import Program

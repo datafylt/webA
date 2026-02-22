@@ -83,6 +83,9 @@ lint.ignore = [
     "F405",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
 [tool.aerich]
 tortoise_orm = "app.settings.TORTOISE_ORM"
 location = "./migrations"
