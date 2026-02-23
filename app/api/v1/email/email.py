@@ -9,7 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field, EmailStr
 
-from app.core.config import settings, SMTP_PROVIDERS
+from app.settings.config import settings, SMTP_PROVIDERS
 from app.services.email_service import email_service
 from app.controllers.notification import notification_controller
 from app.controllers.student import student_controller
