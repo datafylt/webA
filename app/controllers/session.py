@@ -21,10 +21,12 @@ class SessionController(CRUDBase[Session, SessionCreate, SessionUpdate]):
 
     async def get_upcoming_sessions(self, limit: int = 10):
         """Get upcoming sessions"""
-        return await self.model.filter(
-            start_date__gte=date.today(),
-            status="scheduled"
-        ).prefetch_related("program").order_by("start_date").limit(limit)
+        return (
+            await self.model.filter(start_date__gte=date.today(), status="scheduled")
+            .prefetch_related("program")
+            .order_by("start_date")
+            .limit(limit)
+        )
 
     async def get_sessions_by_program(self, program_id: int):
         """Get all sessions for a program"""
@@ -32,10 +34,7 @@ class SessionController(CRUDBase[Session, SessionCreate, SessionUpdate]):
 
     async def get_enrollment_count(self, session_id: int) -> int:
         """Get number of enrolled students"""
-        return await SessionEnrollment.filter(
-            session_id=session_id,
-            status__in=["enrolled", "completed"]
-        ).count()
+        return await SessionEnrollment.filter(session_id=session_id, status__in=["enrolled", "completed"]).count()
 
     async def get_available_spots(self, session_id: int) -> int:
         """Get available spots in session"""

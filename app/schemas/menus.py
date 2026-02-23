@@ -7,6 +7,7 @@ from enum import Enum
 
 class MenuType(str, Enum):
     """Menu type enumeration"""
-    CATALOG = "catalog"   # Catalogue/Directory
-    MENU = "menu"         # Menu item
-    BUTTON = "button"     # Button/Action
+
+    CATALOG = "catalog"  # Catalogue/Directory
+    MENU = "menu"  # Menu item
+    BUTTON = "button"  # Button/Action

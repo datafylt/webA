@@ -18,6 +18,7 @@ router = APIRouter()
 
 # ==================== TEMPLATES ====================
 
+
 @router.get("/templates", summary="Liste des templates")
 async def list_templates(
     page: int = Query(1, description="Numéro de page"),
@@ -30,14 +31,9 @@ async def list_templates(
     q = Q()
     if notification_type:
         q &= Q(notification_type=notification_type)
-    
-    total, template_objs = await template_controller.list(
-        page=page,
-        page_size=page_size,
-        search=q,
-        order=["name"]
-    )
-    
+
+    total, template_objs = await template_controller.list(page=page, page_size=page_size, search=q, order=["name"])
+
     data = [await obj.to_dict() for obj in template_objs]
     return SuccessExtra(data=data, total=total, page=page, page_size=page_size)
 
@@ -62,7 +58,7 @@ async def get_template(
     template_obj = await template_controller.get(id=template_id)
     if not template_obj:
         return Fail(code=404, msg="Template non trouvé")
-    
+
     return Success(data=await template_obj.to_dict())
 
 
@@ -75,7 +71,7 @@ async def create_template(template_in: TemplateCreate):
     existing = await template_controller.get_by_name(template_in.name)
     if existing:
         return Fail(code=400, msg="Un template avec ce nom existe déjà")
-    
+
     new_template = await template_controller.create(obj_in=template_in)
     return Success(msg="Template créé avec succès", data={"id": new_template.id})
 
@@ -102,6 +98,7 @@ async def delete_template(
 
 # ==================== NOTIFICATIONS ====================
 
+
 @router.get("/list", summary="Liste des notifications")
 async def list_notifications(
     page: int = Query(1, description="Numéro de page"),
@@ -115,32 +112,25 @@ async def list_notifications(
     """
     q = Q()
     if search:
-        q &= (
-            Q(recipient_email__icontains=search) |
-            Q(subject__icontains=search) |
-            Q(recipient_name__icontains=search)
-        )
+        q &= Q(recipient_email__icontains=search) | Q(subject__icontains=search) | Q(recipient_name__icontains=search)
     if status:
         q &= Q(status=status)
     if notification_type:
         q &= Q(notification_type=notification_type)
-    
+
     total, notification_objs = await notification_controller.list(
-        page=page,
-        page_size=page_size,
-        search=q,
-        order=["-created_at"]
+        page=page, page_size=page_size, search=q, order=["-created_at"]
     )
-    
+
     data = []
     for obj in notification_objs:
         d = await obj.to_dict()
         # Convert datetime to string
-        for key in ['scheduled_at', 'sent_at', 'created_at', 'updated_at']:
+        for key in ["scheduled_at", "sent_at", "created_at", "updated_at"]:
             if d.get(key):
                 d[key] = str(d[key])
         data.append(d)
-    
+
     return SuccessExtra(data=data, total=total, page=page, page_size=page_size)
 
 
@@ -154,12 +144,12 @@ async def get_notification(
     notification_obj = await notification_controller.get(id=notification_id)
     if not notification_obj:
         return Fail(code=404, msg="Notification non trouvée")
-    
+
     d = await notification_obj.to_dict()
-    for key in ['scheduled_at', 'sent_at', 'created_at', 'updated_at']:
+    for key in ["scheduled_at", "sent_at", "created_at", "updated_at"]:
         if d.get(key):
             d[key] = str(d[key])
-    
+
     return Success(data=d)
 
 
@@ -185,7 +175,7 @@ async def send_bulk_notifications(bulk_in: BulkNotificationCreate):
         student_ids=bulk_in.recipient_ids,
         subject=bulk_in.subject,
         body=bulk_in.body,
-        notification_type=bulk_in.notification_type
+        notification_type=bulk_in.notification_type,
     )
 
     # Si mode test, ne pas envoyer réellement
@@ -196,7 +186,7 @@ async def send_bulk_notifications(bulk_in: BulkNotificationCreate):
 
         return Success(
             msg=f"{len(notifications)} notification(s) créée(s) (mode test)",
-            data={"count": len(notifications), "test_mode": True}
+            data={"count": len(notifications), "test_mode": True},
         )
 
     # Envoyer les emails réellement
@@ -208,7 +198,7 @@ async def send_bulk_notifications(bulk_in: BulkNotificationCreate):
             to_email=notification.recipient_email,
             to_name=notification.recipient_name,
             subject=notification.subject,
-            body_html=notification.body
+            body_html=notification.body,
         )
 
         if result["success"]:
@@ -216,18 +206,13 @@ async def send_bulk_notifications(bulk_in: BulkNotificationCreate):
             sent_count += 1
         else:
             await notification_controller.mark_as_failed(
-                notification.id,
-                error_message=result.get("error", "Erreur inconnue")
+                notification.id, error_message=result.get("error", "Erreur inconnue")
             )
             failed_count += 1
 
     return Success(
         msg=f"{sent_count}/{len(notifications)} email(s) envoyé(s) avec succès",
-        data={
-            "total": len(notifications),
-            "sent": sent_count,
-            "failed": failed_count
-        }
+        data={"total": len(notifications), "sent": sent_count, "failed": failed_count},
     )
 
 
@@ -269,19 +254,21 @@ async def get_options():
     """
     Récupérer les options pour les selects.
     """
-    return Success(data={
-        "types": [
-            {"value": "general", "label": "Général"},
-            {"value": "reminder", "label": "Rappel"},
-            {"value": "confirmation", "label": "Confirmation"},
-            {"value": "invoice", "label": "Facture"},
-            {"value": "welcome", "label": "Bienvenue"},
-            {"value": "session", "label": "Session"},
-        ],
-        "statuses": [
-            {"value": "pending", "label": "En attente"},
-            {"value": "sent", "label": "Envoyé"},
-            {"value": "failed", "label": "Échec"},
-            {"value": "cancelled", "label": "Annulé"},
-        ],
-    })
+    return Success(
+        data={
+            "types": [
+                {"value": "general", "label": "Général"},
+                {"value": "reminder", "label": "Rappel"},
+                {"value": "confirmation", "label": "Confirmation"},
+                {"value": "invoice", "label": "Facture"},
+                {"value": "welcome", "label": "Bienvenue"},
+                {"value": "session", "label": "Session"},
+            ],
+            "statuses": [
+                {"value": "pending", "label": "En attente"},
+                {"value": "sent", "label": "Envoyé"},
+                {"value": "failed", "label": "Échec"},
+                {"value": "cancelled", "label": "Annulé"},
+            ],
+        }
+    )

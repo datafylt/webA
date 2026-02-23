@@ -10,6 +10,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 class StudentCreate(BaseModel):
     """Schema pour créer un étudiant"""
+
     first_name: str = Field(..., min_length=1, max_length=50, description="Prénom")
     last_name: str = Field(..., min_length=1, max_length=50, description="Nom")
     email: EmailStr = Field(..., description="Email")
@@ -26,6 +27,7 @@ class StudentCreate(BaseModel):
 
 class StudentUpdate(BaseModel):
     """Schema pour mettre à jour un étudiant (tous les champs optionnels)"""
+
     id: int = Field(..., description="ID de l'étudiant")
     first_name: Optional[str] = Field(None, min_length=1, max_length=50)
     last_name: Optional[str] = Field(None, min_length=1, max_length=50)

@@ -54,7 +54,9 @@ class EmailService:
             msg = EmailMessage()
 
             # Headers - exactly like Test_email.py
-            from_header = f"{self.smtp_from_name} <{self.smtp_from_email}>" if self.smtp_from_name else self.smtp_from_email
+            from_header = (
+                f"{self.smtp_from_name} <{self.smtp_from_email}>" if self.smtp_from_name else self.smtp_from_email
+            )
 
             msg["From"] = from_header
             msg["To"] = to_email.strip()
@@ -68,7 +70,7 @@ class EmailService:
                 msg["Reply-To"] = reply_to
 
             if cc:
-                msg["Cc"] = ', '.join(cc)
+                msg["Cc"] = ", ".join(cc)
 
             if bcc:
                 # BCC ne doit pas apparaître dans les headers
@@ -77,9 +79,10 @@ class EmailService:
             # Corps texte brut
             if not body_text:
                 import re
-                body_text = re.sub(r'<[^>]+>', '', body_html)
-                body_text = body_text.replace('&nbsp;', ' ')
-                body_text = re.sub(r'\s+', ' ', body_text).strip()
+
+                body_text = re.sub(r"<[^>]+>", "", body_html)
+                body_text = body_text.replace("&nbsp;", " ")
+                body_text = re.sub(r"\s+", " ", body_text).strip()
 
             # Ajouter le contenu - exactly like Test_email.py
             msg.set_content(body_text)
@@ -112,7 +115,7 @@ class EmailService:
                 "success": False,
                 "error": "Erreur d'authentification SMTP. Vérifiez vos identifiants.",
                 "error_details": str(e),
-                "error_code": "AUTH_ERROR"
+                "error_code": "AUTH_ERROR",
             }
         except smtplib.SMTPRecipientsRefused as e:
             error_msg = f"Recipients refused: {str(e)}"
@@ -121,7 +124,7 @@ class EmailService:
                 "success": False,
                 "error": f"Adresse email refusée: {to_email}",
                 "error_details": str(e),
-                "error_code": "RECIPIENT_REFUSED"
+                "error_code": "RECIPIENT_REFUSED",
             }
         except smtplib.SMTPException as e:
             error_msg = f"SMTP error: {str(e)}"
@@ -130,18 +133,13 @@ class EmailService:
                 "success": False,
                 "error": f"Erreur SMTP: {str(e)}",
                 "error_details": str(e),
-                "error_code": "SMTP_ERROR"
+                "error_code": "SMTP_ERROR",
             }
         except Exception as e:
             error_msg = f"Email send error: {str(e)}"
             logger.error(error_msg)
             logger.exception("Full traceback:")
-            return {
-                "success": False,
-                "error": str(e),
-                "error_details": str(e),
-                "error_code": "UNKNOWN_ERROR"
-            }
+            return {"success": False, "error": str(e), "error_details": str(e), "error_code": "UNKNOWN_ERROR"}
 
     def send_bulk_emails(
         self,
@@ -165,28 +163,28 @@ class EmailService:
             # Remplacer les variables du destinataire
             for key, value in recipient.items():
                 placeholder = f"{{{key}}}"
-                personalized_subject = personalized_subject.replace(placeholder, str(value or ''))
-                personalized_body = personalized_body.replace(placeholder, str(value or ''))
+                personalized_subject = personalized_subject.replace(placeholder, str(value or ""))
+                personalized_body = personalized_body.replace(placeholder, str(value or ""))
 
             # Remplacer les variables globales
             if variables:
                 for key, value in variables.items():
                     placeholder = f"{{{key}}}"
-                    personalized_subject = personalized_subject.replace(placeholder, str(value or ''))
-                    personalized_body = personalized_body.replace(placeholder, str(value or ''))
+                    personalized_subject = personalized_subject.replace(placeholder, str(value or ""))
+                    personalized_body = personalized_body.replace(placeholder, str(value or ""))
 
             # Envoyer
             result = self.send_email(
-                to_email=recipient['email'],
-                to_name=recipient.get('name'),
+                to_email=recipient["email"],
+                to_name=recipient.get("name"),
                 subject=personalized_subject,
                 body_html=personalized_body,
             )
 
-            result['recipient'] = recipient['email']
+            result["recipient"] = recipient["email"]
             results.append(result)
 
-            if result['success']:
+            if result["success"]:
                 sent_count += 1
             else:
                 failed_count += 1

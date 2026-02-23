@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 class InvoiceCreate(BaseModel):
     """Schema pour créer une facture"""
+
     student_id: int = Field(..., description="ID de l'étudiant")
     session_id: Optional[int] = Field(None, description="ID de la session")
     subtotal: Decimal = Field(..., ge=0, description="Sous-total")
@@ -20,6 +21,7 @@ class InvoiceCreate(BaseModel):
 
 class InvoiceUpdate(BaseModel):
     """Schema pour mettre à jour une facture"""
+
     id: int = Field(..., description="ID de la facture")
     subtotal: Optional[Decimal] = Field(None, ge=0)
     description: Optional[str] = None
@@ -29,6 +31,7 @@ class InvoiceUpdate(BaseModel):
 
 class PaymentCreate(BaseModel):
     """Schema pour enregistrer un paiement"""
+
     invoice_id: int = Field(..., description="ID de la facture")
     amount: Decimal = Field(..., gt=0, description="Montant")
     payment_method: str = Field(..., description="Méthode de paiement")

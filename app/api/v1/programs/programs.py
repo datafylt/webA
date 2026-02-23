@@ -31,21 +31,18 @@ async def list_programs(
         q &= Q(name__icontains=search) | Q(code__icontains=search)
     if is_active is not None:
         q &= Q(is_active=is_active)
-    
+
     total, program_objs = await program_controller.list(
-        page=page, 
-        page_size=page_size, 
-        search=q,
-        order=["display_order", "name"]
+        page=page, page_size=page_size, search=q, order=["display_order", "name"]
     )
     data = []
     for obj in program_objs:
         d = await obj.to_dict()
         # Convert Decimal to float for JSON serialization
-        if 'price' in d and d['price'] is not None:
-            d['price'] = float(d['price'])
+        if "price" in d and d["price"] is not None:
+            d["price"] = float(d["price"])
         data.append(d)
-    
+
     return SuccessExtra(data=data, total=total, page=page, page_size=page_size)
 
 
@@ -58,8 +55,8 @@ async def get_all_active_programs():
     data = []
     for obj in programs:
         d = await obj.to_dict()
-        if 'price' in d and d['price'] is not None:
-            d['price'] = float(d['price'])
+        if "price" in d and d["price"] is not None:
+            d["price"] = float(d["price"])
         data.append(d)
     return Success(data=data)
 
@@ -74,8 +71,8 @@ async def get_program(
     program_obj = await program_controller.get(id=program_id)
     program_dict = await program_obj.to_dict()
     # Convert Decimal to float
-    if 'price' in program_dict and program_dict['price'] is not None:
-        program_dict['price'] = float(program_dict['price'])
+    if "price" in program_dict and program_dict["price"] is not None:
+        program_dict["price"] = float(program_dict["price"])
     return Success(data=program_dict)
 
 
@@ -87,7 +84,7 @@ async def create_program(program_in: ProgramCreate):
     # Vérifier si le code existe déjà
     if await program_controller.check_code_exists(program_in.code):
         return Fail(code=400, msg="Un programme avec ce code existe déjà")
-    
+
     new_program = await program_controller.create(obj_in=program_in)
     return Success(msg="Programme créé avec succès", data={"id": new_program.id})
 
@@ -101,7 +98,7 @@ async def update_program(program_in: ProgramUpdate):
     if program_in.code:
         if await program_controller.check_code_exists(program_in.code, exclude_id=program_in.id):
             return Fail(code=400, msg="Un programme avec ce code existe déjà")
-    
+
     await program_controller.update(id=program_in.id, obj_in=program_in)
     return Success(msg="Programme modifié avec succès")
 
@@ -122,27 +119,29 @@ async def get_options():
     """
     Récupérer les options pour les selects.
     """
-    return Success(data={
-        "exam_types": [
-            {"value": "emploi_quebec", "label": "Emploi-Québec"},
-            {"value": "cmeq", "label": "CMEQ"},
-            {"value": "rbq", "label": "RBQ"},
-            {"value": "sceau_rouge", "label": "Sceau Rouge (Interprovincial)"},
-        ],
-        "colors": [
-            {"value": "#0277BC", "label": "Bleu"},
-            {"value": "#4CAF50", "label": "Vert"},
-            {"value": "#FF9800", "label": "Orange"},
-            {"value": "#9C27B0", "label": "Violet"},
-            {"value": "#F44336", "label": "Rouge"},
-            {"value": "#607D8B", "label": "Gris"},
-        ],
-        "icons": [
-            {"value": "mdi:lightning-bolt", "label": "Éclair"},
-            {"value": "mdi:tools", "label": "Outils"},
-            {"value": "mdi:home-city", "label": "Bâtiment"},
-            {"value": "mdi:office-building-marker", "label": "Bureau"},
-            {"value": "mdi:certificate", "label": "Certificat"},
-            {"value": "mdi:school", "label": "École"},
-        ],
-    })
+    return Success(
+        data={
+            "exam_types": [
+                {"value": "emploi_quebec", "label": "Emploi-Québec"},
+                {"value": "cmeq", "label": "CMEQ"},
+                {"value": "rbq", "label": "RBQ"},
+                {"value": "sceau_rouge", "label": "Sceau Rouge (Interprovincial)"},
+            ],
+            "colors": [
+                {"value": "#0277BC", "label": "Bleu"},
+                {"value": "#4CAF50", "label": "Vert"},
+                {"value": "#FF9800", "label": "Orange"},
+                {"value": "#9C27B0", "label": "Violet"},
+                {"value": "#F44336", "label": "Rouge"},
+                {"value": "#607D8B", "label": "Gris"},
+            ],
+            "icons": [
+                {"value": "mdi:lightning-bolt", "label": "Éclair"},
+                {"value": "mdi:tools", "label": "Outils"},
+                {"value": "mdi:home-city", "label": "Bâtiment"},
+                {"value": "mdi:office-building-marker", "label": "Bureau"},
+                {"value": "mdi:certificate", "label": "Certificat"},
+                {"value": "mdi:school", "label": "École"},
+            ],
+        }
+    )
