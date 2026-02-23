@@ -104,7 +104,6 @@ async def update_user_password(req_in: UpdatePassword):
 
 @router.get("/health", summary="Health Check")
 async def health_check():
-    x = 1  # ← PUT BREAKPOINT HERE
     return {
         "status": "healthy",
         "service": "Website A API",

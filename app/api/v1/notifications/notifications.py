@@ -3,7 +3,6 @@ Notification API Endpoints - CRUD Operations
 """
 
 import logging
-from datetime import datetime
 
 from fastapi import APIRouter, Query
 from tortoise.expressions import Q
@@ -176,18 +175,59 @@ async def create_notification(notification_in: NotificationCreate):
 @router.post("/send-bulk", summary="Envoi en masse")
 async def send_bulk_notifications(bulk_in: BulkNotificationCreate):
     """
-    Créer des notifications pour plusieurs étudiants.
+    Créer et envoyer des notifications pour plusieurs étudiants.
     """
+    from app.services.email_service import email_service
+    from app.core.config import settings
+
+    # Créer les notifications
     notifications = await notification_controller.create_bulk_notifications(
         student_ids=bulk_in.recipient_ids,
         subject=bulk_in.subject,
         body=bulk_in.body,
         notification_type=bulk_in.notification_type
     )
-    
+
+    # Si mode test, ne pas envoyer réellement
+    if settings.EMAIL_TEST_MODE:
+        logger.info(f"[TEST MODE] {len(notifications)} notifications simulées")
+        for notification in notifications:
+            await notification_controller.mark_as_sent(notification.id)
+
+        return Success(
+            msg=f"{len(notifications)} notification(s) créée(s) (mode test)",
+            data={"count": len(notifications), "test_mode": True}
+        )
+
+    # Envoyer les emails réellement
+    sent_count = 0
+    failed_count = 0
+
+    for notification in notifications:
+        result = email_service.send_email(
+            to_email=notification.recipient_email,
+            to_name=notification.recipient_name,
+            subject=notification.subject,
+            body_html=notification.body
+        )
+
+        if result["success"]:
+            await notification_controller.mark_as_sent(notification.id)
+            sent_count += 1
+        else:
+            await notification_controller.mark_as_failed(
+                notification.id,
+                error_message=result.get("error", "Erreur inconnue")
+            )
+            failed_count += 1
+
     return Success(
-        msg=f"{len(notifications)} notification(s) créée(s) avec succès",
-        data={"count": len(notifications)}
+        msg=f"{sent_count}/{len(notifications)} email(s) envoyé(s) avec succès",
+        data={
+            "total": len(notifications),
+            "sent": sent_count,
+            "failed": failed_count
+        }
     )
 
 

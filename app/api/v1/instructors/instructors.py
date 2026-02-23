@@ -3,7 +3,6 @@ Instructor API Endpoints - CRUD Operations
 """
 
 import logging
-from decimal import Decimal
 
 from fastapi import APIRouter, Query
 from tortoise.expressions import Q
