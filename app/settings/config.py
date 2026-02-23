@@ -115,6 +115,8 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+TORTOISE_ORM = settings.TORTOISE_ORM
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SMTP PROVIDER PRESETS

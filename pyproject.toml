@@ -87,6 +87,6 @@ lint.ignore = [
 "__init__.py" = ["F401"]
 
 [tool.aerich]
-tortoise_orm = "app.settings.TORTOISE_ORM"
+tortoise_orm = "app.settings.config.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
