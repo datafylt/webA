@@ -1,3 +1,4 @@
+import json
 import os
 import typing
 from dotenv import load_dotenv
@@ -7,16 +8,38 @@ from pydantic_settings import BaseSettings
 load_dotenv()
 
 
+def _parse_list_env(env_var: str, default: typing.List) -> typing.List:
+    """Read a list from an env var, supporting JSON array or comma-separated formats."""
+    value = os.getenv(env_var, "").strip()
+    if not value:
+        return default
+    try:
+        parsed = json.loads(value)
+        return parsed if isinstance(parsed, list) else [parsed]
+    except json.JSONDecodeError:
+        return [x.strip() for x in value.split(",") if x.strip()]
+
+
 class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     APP_TITLE: str = "Formation Électro API"
     PROJECT_NAME: str = "Formation Électro"
     APP_DESCRIPTION: str = "Système de gestion de formation"
 
-    CORS_ORIGINS: typing.List = ["*"]
+    # CORS list fields are read via properties to bypass pydantic_settings JSON decoding
     CORS_ALLOW_CREDENTIALS: bool = True
-    CORS_ALLOW_METHODS: typing.List = ["*"]
-    CORS_ALLOW_HEADERS: typing.List = ["*"]
+
+    @property
+    def CORS_ORIGINS(self) -> typing.List:
+        return _parse_list_env("CORS_ORIGINS", ["*"])
+
+    @property
+    def CORS_ALLOW_METHODS(self) -> typing.List:
+        return _parse_list_env("CORS_ALLOW_METHODS", ["*"])
+
+    @property
+    def CORS_ALLOW_HEADERS(self) -> typing.List:
+        return _parse_list_env("CORS_ALLOW_HEADERS", ["*"])
 
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
 

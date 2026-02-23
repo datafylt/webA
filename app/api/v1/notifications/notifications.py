@@ -168,7 +168,7 @@ async def send_bulk_notifications(bulk_in: BulkNotificationCreate):
     Créer et envoyer des notifications pour plusieurs étudiants.
     """
     from app.services.email_service import email_service
-    from app.core.config import settings
+    from app.settings.config import settings
 
     # Créer les notifications
     notifications = await notification_controller.create_bulk_notifications(
