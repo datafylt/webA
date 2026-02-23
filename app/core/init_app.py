@@ -69,15 +69,18 @@ def register_routers(app: FastAPI, prefix: str = "/api"):
 async def init_superuser():
     user = await user_controller.model.exists()
     if not user:
-        await user_controller.create_user(
-            UserCreate(
-                username="admin",
-                email="admin@admin.com",
-                password="123456",
-                is_active=True,
-                is_superuser=True,
+        try:
+            await user_controller.create_user(
+                UserCreate(
+                    username="admin",
+                    email="admin@admin.com",
+                    password="123456",
+                    is_active=True,
+                    is_superuser=True,
+                )
             )
-        )
+        except Exception:
+            pass  # Race condition: another worker already created the admin user
 
 
 async def init_menus():
