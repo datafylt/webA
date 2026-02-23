@@ -30,24 +30,19 @@ async def list_students(
     q = Q()
     if search:
         q &= (
-            Q(first_name__icontains=search) |
-            Q(last_name__icontains=search) |
-            Q(email__icontains=search) |
-            Q(phone__icontains=search)
+            Q(first_name__icontains=search)
+            | Q(last_name__icontains=search)
+            | Q(email__icontains=search)
+            | Q(phone__icontains=search)
         )
     if status:
         q &= Q(status=status)
     if goal:
         q &= Q(goal=goal)
-    
-    total, student_objs = await student_controller.list(
-        page=page, 
-        page_size=page_size, 
-        search=q,
-        order=["-created_at"]
-    )
+
+    total, student_objs = await student_controller.list(page=page, page_size=page_size, search=q, order=["-created_at"])
     data = [await obj.to_dict() for obj in student_objs]
-    
+
     return SuccessExtra(data=data, total=total, page=page, page_size=page_size)
 
 
@@ -71,7 +66,7 @@ async def create_student(student_in: StudentCreate):
     # Vérifier si l'email existe déjà
     if await student_controller.check_email_exists(student_in.email):
         return Fail(code=400, msg="Un étudiant avec cet email existe déjà")
-    
+
     new_student = await student_controller.create(obj_in=student_in)
     return Success(msg="Étudiant créé avec succès", data={"id": new_student.id})
 
@@ -85,7 +80,7 @@ async def update_student(student_in: StudentUpdate):
     if student_in.email:
         if await student_controller.check_email_exists(student_in.email, exclude_id=student_in.id):
             return Fail(code=400, msg="Un étudiant avec cet email existe déjà")
-    
+
     await student_controller.update(id=student_in.id, obj_in=student_in)
     return Success(msg="Étudiant modifié avec succès")
 
@@ -120,7 +115,7 @@ async def bulk_update_status(
     """
     if status not in ["active", "inactive", "expired"]:
         return Fail(code=400, msg="Statut invalide")
-    
+
     updated_count = await student_controller.bulk_update_status(ids, status)
     return Success(msg=f"{updated_count} étudiant(s) mis à jour")
 
@@ -130,18 +125,20 @@ async def get_options():
     """
     Récupérer les options pour les selects (goal, status).
     """
-    return Success(data={
-        "goals": [
-            {"value": "licence_c", "label": "Licence C - Compagnon Électricien"},
-            {"value": "rca", "label": "RCA - Connexions Restreintes"},
-            {"value": "rbq", "label": "RBQ - Constructeur Propriétaire"},
-            {"value": "cmeq", "label": "CMEQ - Entrepreneur Électricien"},
-            {"value": "sceau_rouge", "label": "Sceau Rouge - Interprovincial"},
-            {"value": "custom", "label": "Formation sur mesure"},
-        ],
-        "statuses": [
-            {"value": "active", "label": "Actif"},
-            {"value": "inactive", "label": "Inactif"},
-            {"value": "expired", "label": "Expiré"},
-        ],
-    })
+    return Success(
+        data={
+            "goals": [
+                {"value": "licence_c", "label": "Licence C - Compagnon Électricien"},
+                {"value": "rca", "label": "RCA - Connexions Restreintes"},
+                {"value": "rbq", "label": "RBQ - Constructeur Propriétaire"},
+                {"value": "cmeq", "label": "CMEQ - Entrepreneur Électricien"},
+                {"value": "sceau_rouge", "label": "Sceau Rouge - Interprovincial"},
+                {"value": "custom", "label": "Formation sur mesure"},
+            ],
+            "statuses": [
+                {"value": "active", "label": "Actif"},
+                {"value": "inactive", "label": "Inactif"},
+                {"value": "expired", "label": "Expiré"},
+            ],
+        }
+    )

@@ -2,6 +2,7 @@
 Direct SMTP test for Heroku deployment
 This tests the email configuration directly
 """
+
 import smtplib
 import ssl
 from email.message import EmailMessage
@@ -14,6 +15,7 @@ SMTP_USER = "administration@formationelectro.com"
 SMTP_PASSWORD = "951753!!!Yoric"
 SMTP_FROM_EMAIL = "administration@formationelectro.com"
 SMTP_FROM_NAME = "FormationElectro"
+
 
 def send_test_email():
     """Send a test email via IONOS SMTP"""
@@ -122,9 +124,9 @@ Date: February 8, 2026
             server.send_message(msg)
             print("✅ Email sent successfully!")
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("🎉 TEST COMPLETE - Email sent successfully!")
-        print("="*60)
+        print("=" * 60)
         print("\n📬 Check your inbox at: ric.seedoo@gmail.com")
         print("   (Also check spam folder if not in inbox)")
         print("\n✅ Your SMTP configuration is working correctly!")
@@ -143,10 +145,11 @@ Date: February 8, 2026
         print(f"\n❌ Error: {e}")
         return False
 
+
 if __name__ == "__main__":
-    print("="*60)
+    print("=" * 60)
     print("📧 Formation Électro - SMTP Test (Heroku)")
-    print("="*60)
+    print("=" * 60)
     print()
 
     success = send_test_email()

@@ -102,11 +102,12 @@ async def update_user_password(req_in: UpdatePassword):
     await user.save()
     return Success(msg="Modified successfully")
 
+
 @router.get("/health", summary="Health Check")
 async def health_check():
     return {
         "status": "healthy",
         "service": "Website A API",
         "version": "1.0.0",
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }

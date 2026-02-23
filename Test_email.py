@@ -4,8 +4,8 @@ import ssl
 from email.message import EmailMessage
 from email.utils import formatdate, make_msgid
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 
 
 def main(password):
@@ -26,7 +26,7 @@ def main(password):
     msg["Subject"] = SUBJECT
 
     # Important for IONOS policy checks:
-    msg["Date"] = formatdate(localtime=True)   # RFC 2822 Date
+    msg["Date"] = formatdate(localtime=True)  # RFC 2822 Date
     msg["Message-ID"] = make_msgid()
 
     msg.set_content("Ceci est un test depuis Python.")  # plain fallback

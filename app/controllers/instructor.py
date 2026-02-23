@@ -30,10 +30,7 @@ class InstructorController(CRUDBase[Instructor, InstructorCreate, InstructorUpda
 
     async def get_available_instructors(self):
         """Get available instructors for assignment"""
-        return await self.model.filter(
-            status="active",
-            is_available=True
-        ).order_by("last_name", "first_name")
+        return await self.model.filter(status="active", is_available=True).order_by("last_name", "first_name")
 
     async def update_status(self, id: int, status: str) -> Optional[Instructor]:
         """Update instructor status"""
@@ -45,10 +42,7 @@ class InstructorController(CRUDBase[Instructor, InstructorCreate, InstructorUpda
 
     async def get_by_specialization(self, specialization: str):
         """Get instructors by specialization"""
-        return await self.model.filter(
-            specialization=specialization,
-            status="active"
-        ).order_by("last_name")
+        return await self.model.filter(specialization=specialization, status="active").order_by("last_name")
 
 
 instructor_controller = InstructorController()

@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field, EmailStr
 
 class InstructorCreate(BaseModel):
     """Schema pour créer un formateur"""
+
     first_name: str = Field(..., min_length=1, max_length=100, description="Prénom")
     last_name: str = Field(..., min_length=1, max_length=100, description="Nom")
     email: EmailStr = Field(..., description="Email")
@@ -26,6 +27,7 @@ class InstructorCreate(BaseModel):
 
 class InstructorUpdate(BaseModel):
     """Schema pour mettre à jour un formateur"""
+
     id: int = Field(..., description="ID du formateur")
     first_name: Optional[str] = Field(None, min_length=1, max_length=100)
     last_name: Optional[str] = Field(None, min_length=1, max_length=100)

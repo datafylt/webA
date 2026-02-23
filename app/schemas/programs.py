@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 class ProgramCreate(BaseModel):
     """Schema pour créer un programme"""
+
     name: str = Field(..., min_length=1, max_length=100, description="Nom du programme")
     code: str = Field(..., min_length=1, max_length=50, description="Code unique")
     description: Optional[str] = Field(None, description="Description")
@@ -24,6 +25,7 @@ class ProgramCreate(BaseModel):
 
 class ProgramUpdate(BaseModel):
     """Schema pour mettre à jour un programme"""
+
     id: int = Field(..., description="ID du programme")
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     code: Optional[str] = Field(None, min_length=1, max_length=50)

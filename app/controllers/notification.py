@@ -25,10 +25,7 @@ class TemplateController(CRUDBase[NotificationTemplate, TemplateCreate, Template
 
     async def get_by_type(self, notification_type: str):
         """Get templates by type"""
-        return await self.model.filter(
-            notification_type=notification_type,
-            is_active=True
-        ).order_by("name")
+        return await self.model.filter(notification_type=notification_type, is_active=True).order_by("name")
 
 
 class NotificationController(CRUDBase[Notification, NotificationCreate, NotificationCreate]):
@@ -65,18 +62,20 @@ class NotificationController(CRUDBase[Notification, NotificationCreate, Notifica
         )
         return notification
 
-    async def create_bulk_notifications(self, student_ids: List[int], subject: str, body: str, notification_type: str = "general") -> List[Notification]:
+    async def create_bulk_notifications(
+        self, student_ids: List[int], subject: str, body: str, notification_type: str = "general"
+    ) -> List[Notification]:
         """Create notifications for multiple students"""
         notifications = []
         students = await Student.filter(id__in=student_ids)
-        
+
         for student in students:
             # Replace variables in body
             personalized_body = body.replace("{student_name}", student.full_name)
             personalized_body = personalized_body.replace("{first_name}", student.first_name)
             personalized_body = personalized_body.replace("{last_name}", student.last_name)
             personalized_body = personalized_body.replace("{email}", student.email)
-            
+
             notification = await self.model.create(
                 recipient_email=student.email,
                 recipient_name=student.full_name,
@@ -84,10 +83,10 @@ class NotificationController(CRUDBase[Notification, NotificationCreate, Notifica
                 subject=subject,
                 body=personalized_body,
                 notification_type=notification_type,
-                status="pending"
+                status="pending",
             )
             notifications.append(notification)
-        
+
         return notifications
 
     async def mark_as_sent(self, notification_id: int) -> Optional[Notification]:
@@ -119,19 +118,16 @@ class NotificationController(CRUDBase[Notification, NotificationCreate, Notifica
     async def get_stats(self):
         """Get notification statistics"""
         from datetime import timedelta
-        
+
         total = await self.model.all().count()
         sent = await self.model.filter(status="sent").count()
         pending = await self.model.filter(status="pending").count()
         failed = await self.model.filter(status="failed").count()
-        
+
         # Dernières 24h
         yesterday = datetime.now() - timedelta(days=1)
-        sent_24h = await self.model.filter(
-            status="sent",
-            sent_at__gte=yesterday
-        ).count()
-        
+        sent_24h = await self.model.filter(status="sent", sent_at__gte=yesterday).count()
+
         return {
             "total": total,
             "sent": sent,

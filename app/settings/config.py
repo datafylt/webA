@@ -6,9 +6,10 @@ from pydantic_settings import BaseSettings
 
 load_dotenv()
 
+
 class Settings(BaseSettings):
     VERSION: str = "1.0.0"
-    APP_TITLE: str = 'Formation Électro API'
+    APP_TITLE: str = "Formation Électro API"
     PROJECT_NAME: str = "Formation Électro"
     APP_DESCRIPTION: str = "Système de gestion de formation"
 
@@ -31,7 +32,7 @@ class Settings(BaseSettings):
     # ═══════════════════════════════════════════════════════════════════════
     DATABASE_URL: str = os.getenv("DATABASE_URL", "")
     DB_USE_POSTGRES: bool = os.getenv("DB_USE_POSTGRES", "false").lower() == "true"
-    
+
     # ═══════════════════════════════════════════════════════════════════════
     # SMTP EMAIL - IONOS Configuration
     # ═══════════════════════════════════════════════════════════════════════
@@ -44,7 +45,7 @@ class Settings(BaseSettings):
     SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "false").lower() == "true"
     SMTP_USE_SSL: bool = os.getenv("SMTP_USE_SSL", "true").lower() == "true"
     EMAIL_TEST_MODE: bool = os.getenv("EMAIL_TEST_MODE", "false").lower() == "true"
-    
+
     @property
     def TORTOISE_ORM(self) -> dict:
         """
@@ -65,6 +66,7 @@ class Settings(BaseSettings):
 
             # Parse URL or use direct connection string
             from urllib.parse import urlparse
+
             parsed = urlparse(db_url)
 
             return {

@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 class SessionCreate(BaseModel):
     """Schema pour créer une session"""
+
     program_id: int = Field(..., description="ID du programme")
     title: str = Field(..., min_length=1, max_length=200, description="Titre")
     description: Optional[str] = Field(None, description="Description")
@@ -30,6 +31,7 @@ class SessionCreate(BaseModel):
 
 class SessionUpdate(BaseModel):
     """Schema pour mettre à jour une session"""
+
     id: int = Field(..., description="ID de la session")
     program_id: Optional[int] = None
     title: Optional[str] = Field(None, min_length=1, max_length=200)
@@ -50,6 +52,7 @@ class SessionUpdate(BaseModel):
 
 class EnrollmentCreate(BaseModel):
     """Schema pour inscrire un étudiant"""
+
     session_id: int = Field(..., description="ID de la session")
     student_id: int = Field(..., description="ID de l'étudiant")
     notes: Optional[str] = None
@@ -57,6 +60,7 @@ class EnrollmentCreate(BaseModel):
 
 class EnrollmentUpdate(BaseModel):
     """Schema pour modifier une inscription"""
+
     id: int = Field(..., description="ID de l'inscription")
     status: Optional[str] = None
     payment_status: Optional[str] = None

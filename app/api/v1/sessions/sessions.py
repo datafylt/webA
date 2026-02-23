@@ -19,16 +19,16 @@ router = APIRouter()
 
 def serialize_session(obj: dict) -> dict:
     """Convert non-JSON-serializable types"""
-    if obj.get('price') is not None:
-        obj['price'] = float(obj['price'])
-    if obj.get('start_date'):
-        obj['start_date'] = str(obj['start_date'])
-    if obj.get('end_date'):
-        obj['end_date'] = str(obj['end_date'])
-    if obj.get('start_time'):
-        obj['start_time'] = str(obj['start_time'])
-    if obj.get('end_time'):
-        obj['end_time'] = str(obj['end_time'])
+    if obj.get("price") is not None:
+        obj["price"] = float(obj["price"])
+    if obj.get("start_date"):
+        obj["start_date"] = str(obj["start_date"])
+    if obj.get("end_date"):
+        obj["end_date"] = str(obj["end_date"])
+    if obj.get("start_time"):
+        obj["start_time"] = str(obj["start_time"])
+    if obj.get("end_time"):
+        obj["end_time"] = str(obj["end_time"])
     return obj
 
 
@@ -53,14 +53,9 @@ async def list_sessions(
         q &= Q(status=status)
     if upcoming:
         q &= Q(start_date__gte=date.today())
-    
-    total, session_objs = await session_controller.list(
-        page=page, 
-        page_size=page_size, 
-        search=q,
-        order=["-start_date"]
-    )
-    
+
+    total, session_objs = await session_controller.list(page=page, page_size=page_size, search=q, order=["-start_date"])
+
     data = []
     for obj in session_objs:
         await obj.fetch_related("program")
@@ -68,13 +63,13 @@ async def list_sessions(
         d = serialize_session(d)
         # Add program info
         if obj.program:
-            d['program_name'] = obj.program.name
-            d['program_code'] = obj.program.code
+            d["program_name"] = obj.program.name
+            d["program_code"] = obj.program.code
         # Add enrollment count
-        d['enrolled_count'] = await session_controller.get_enrollment_count(obj.id)
-        d['available_spots'] = obj.max_participants - d['enrolled_count']
+        d["enrolled_count"] = await session_controller.get_enrollment_count(obj.id)
+        d["available_spots"] = obj.max_participants - d["enrolled_count"]
         data.append(d)
-    
+
     return SuccessExtra(data=data, total=total, page=page, page_size=page_size)
 
 
@@ -88,17 +83,17 @@ async def get_session(
     session_obj = await session_controller.get_with_program(session_id)
     if not session_obj:
         return Fail(code=404, msg="Session non trouvée")
-    
+
     d = await session_obj.to_dict()
     d = serialize_session(d)
-    
+
     if session_obj.program:
-        d['program_name'] = session_obj.program.name
-        d['program_code'] = session_obj.program.code
-    
-    d['enrolled_count'] = await session_controller.get_enrollment_count(session_obj.id)
-    d['available_spots'] = session_obj.max_participants - d['enrolled_count']
-    
+        d["program_name"] = session_obj.program.name
+        d["program_code"] = session_obj.program.code
+
+    d["enrolled_count"] = await session_controller.get_enrollment_count(session_obj.id)
+    d["available_spots"] = session_obj.max_participants - d["enrolled_count"]
+
     return Success(data=d)
 
 
@@ -131,7 +126,7 @@ async def delete_session(
     enrollment_count = await session_controller.get_enrollment_count(session_id)
     if enrollment_count > 0:
         return Fail(code=400, msg=f"Impossible de supprimer: {enrollment_count} inscriptions actives")
-    
+
     await session_controller.remove(id=session_id)
     return Success(msg="Session supprimée avec succès")
 
@@ -149,10 +144,10 @@ async def get_upcoming_sessions(
         d = await obj.to_dict()
         d = serialize_session(d)
         if obj.program:
-            d['program_name'] = obj.program.name
-        d['enrolled_count'] = await session_controller.get_enrollment_count(obj.id)
+            d["program_name"] = obj.program.name
+        d["enrolled_count"] = await session_controller.get_enrollment_count(obj.id)
         data.append(d)
-    
+
     return Success(data=data)
 
 
@@ -161,22 +156,25 @@ async def get_options():
     """
     Récupérer les options pour les selects.
     """
-    return Success(data={
-        "location_types": [
-            {"value": "in_person", "label": "En personne"},
-            {"value": "online", "label": "En ligne"},
-            {"value": "hybrid", "label": "Hybride"},
-        ],
-        "statuses": [
-            {"value": "scheduled", "label": "Planifiée"},
-            {"value": "in_progress", "label": "En cours"},
-            {"value": "completed", "label": "Terminée"},
-            {"value": "cancelled", "label": "Annulée"},
-        ],
-    })
+    return Success(
+        data={
+            "location_types": [
+                {"value": "in_person", "label": "En personne"},
+                {"value": "online", "label": "En ligne"},
+                {"value": "hybrid", "label": "Hybride"},
+            ],
+            "statuses": [
+                {"value": "scheduled", "label": "Planifiée"},
+                {"value": "in_progress", "label": "En cours"},
+                {"value": "completed", "label": "Terminée"},
+                {"value": "cancelled", "label": "Annulée"},
+            ],
+        }
+    )
 
 
 # ==================== ENROLLMENTS ====================
+
 
 @router.get("/enrollments", summary="Inscriptions d'une session")
 async def get_session_enrollments(
@@ -189,16 +187,16 @@ async def get_session_enrollments(
     data = []
     for e in enrollments:
         d = await e.to_dict()
-        if d.get('amount_paid') is not None:
-            d['amount_paid'] = float(d['amount_paid'])
-        if d.get('enrolled_at'):
-            d['enrolled_at'] = str(d['enrolled_at'])
+        if d.get("amount_paid") is not None:
+            d["amount_paid"] = float(d["amount_paid"])
+        if d.get("enrolled_at"):
+            d["enrolled_at"] = str(d["enrolled_at"])
         # Add student info
         if e.student:
-            d['student_name'] = f"{e.student.first_name} {e.student.last_name}"
-            d['student_email'] = e.student.email
+            d["student_name"] = f"{e.student.first_name} {e.student.last_name}"
+            d["student_email"] = e.student.email
         data.append(d)
-    
+
     return Success(data=data)
 
 
@@ -210,12 +208,12 @@ async def enroll_student(enrollment_in: EnrollmentCreate):
     # Check if already enrolled
     if await enrollment_controller.is_enrolled(enrollment_in.session_id, enrollment_in.student_id):
         return Fail(code=400, msg="L'étudiant est déjà inscrit à cette session")
-    
+
     # Check available spots
     available = await session_controller.get_available_spots(enrollment_in.session_id)
     if available <= 0:
         return Fail(code=400, msg="Aucune place disponible")
-    
+
     new_enrollment = await enrollment_controller.create(obj_in=enrollment_in)
     return Success(msg="Inscription réussie", data={"id": new_enrollment.id})
 

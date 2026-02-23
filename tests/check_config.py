@@ -1,6 +1,7 @@
 """
 Quick script to check actual configuration values
 """
+
 import sys
 import os
 

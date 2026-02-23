@@ -1,6 +1,7 @@
 """
 Test script to debug email_service
 """
+
 import sys
 import os
 
@@ -8,6 +9,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.email_service import email_service
+
 
 def main():
     print("=" * 60)
@@ -41,7 +43,7 @@ def main():
     result = email_service.send_email(
         to_email="ric.seedoo@gmail.com",
         subject="Test from Email Service",
-        body_html="<h1>Test Email Service</h1><p>Testing the email service directly.</p>"
+        body_html="<h1>Test Email Service</h1><p>Testing the email service directly.</p>",
     )
 
     print(f"\nSend Result: {result}")
@@ -51,6 +53,7 @@ def main():
     else:
         print(f"\n✗ Email failed: {result.get('error')}")
         print(f"Error Code: {result.get('error_code')}")
+
 
 if __name__ == "__main__":
     main()
