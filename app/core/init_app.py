@@ -182,6 +182,7 @@ async def init_menus():
 
 
 async def init_db():
+    """Initialize Tortoise ORM connection + run aerich migrations."""
     command = Command(tortoise_config=settings.TORTOISE_ORM)
     try:
         await command.init_db(safe=True)
@@ -197,6 +198,12 @@ async def init_db():
         await command.init_db(safe=True)
 
     await command.upgrade(run_in_transaction=True)
+
+
+async def init_connect():
+    """Initialize Tortoise ORM connection only — no migrations."""
+    from tortoise import Tortoise
+    await Tortoise.init(config=settings.TORTOISE_ORM)
 
 
 async def init_roles():
@@ -226,7 +233,9 @@ async def init_roles():
 
 async def init_data():
     if settings.AUTO_MIGRATE:
-        await init_db()
+        await init_db()       # connect + migrate
+    else:
+        await init_connect()  # connect only, skip migrations
     await init_superuser()
     await init_menus()
     await init_roles()
