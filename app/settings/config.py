@@ -42,6 +42,7 @@ class Settings(BaseSettings):
         return _parse_list_env("CORS_ALLOW_HEADERS", ["*"])
 
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
+    AUTO_MIGRATE: bool = os.getenv("AUTO_MIGRATE", "false").lower() == "true"
 
     PROJECT_ROOT: str = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
     BASE_DIR: str = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))

@@ -225,7 +225,8 @@ async def init_roles():
 
 
 async def init_data():
-    await init_db()
+    if settings.AUTO_MIGRATE:
+        await init_db()
     await init_superuser()
     await init_menus()
     await init_roles()
